@@ -40,7 +40,7 @@ FROM
   GROUP BY
     toDate(created_at)
 ) d
-FULL JOIN
+LEFT JOIN
 (
   SELECT
     toDate(created_at) AS created_at,

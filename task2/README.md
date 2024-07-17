@@ -19,7 +19,7 @@
    - etc.
 
     Здесь можно как обновлять таблицу целиком (используя в качестве bash скрипта скрипт, выполняющий
-`REFRESH MATERIALIZED VIEW`, если таблица `date_agg_operations` является `MATERIALIZED VIEW` и СУБД поддерживает
+`REFRESH MATERIALIZED VIEW`, если таблица `date_agg_operations` является `MATERIALIZED VIEW` и БД поддерживает
 такой метод обновления витрины, как, например, PostgreSQL, или просто через пару `TRUNCATE,INSERT SELECT` для обычных таблиц),
 или партицированно (`PARTITION BY toDate(created_at)`), если есть понимание, за какие промежутки времени таблицы `deposits`, `withdrawals` могут быть обновлены.
 Я бы использовал связку Airflow/cron job + python code, в котором обновлял бы только нужные партиции, предварительно изучив,
