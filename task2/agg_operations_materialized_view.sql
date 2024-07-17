@@ -28,8 +28,8 @@ CREATE MATERIALIZED VIEW date_agg_operations_mv TO date_agg_operations AS
 SELECT
   created_at,
   ifNull(total_deposits, 0) AS total_deposits,
-  ifNull(total_withdrawals, 0) AS total_withdrawals,
-  ifNull(total_deposits, 0) - ifNull(total_withdrawals, 0) AS total_revenue
+  ifNull(delta_withdrawals, 0) AS total_withdrawals,
+  ifNull(total_deposits, 0) - ifNull(delta_withdrawals, 0) AS total_revenue
 FROM
 (
   SELECT
@@ -43,11 +43,20 @@ FROM
 LEFT JOIN
 (
   SELECT
-    toDate(created_at) AS created_at,
-    sum(amount) AS total_withdrawals
+    created_at,
+    t.total_withdrawals - ifNull(date_agg_operations.total_withdrawals, 0) AS delta_withdrawals
   FROM
-    withdrawals
-  GROUP BY
-    toDate(created_at)
+  (
+    SELECT
+      toDate(created_at) AS created_at,
+      sum(amount) AS total_withdrawals
+    FROM
+      withdrawals
+    GROUP BY
+      toDate(created_at)
+  ) t
+  LEFT JOIN
+    date_agg_operations
+  ON t.created_at = date_agg_operations.created_at
 ) w
 ON d.created_at = w.created_at
